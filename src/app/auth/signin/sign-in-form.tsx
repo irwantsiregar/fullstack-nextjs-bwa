@@ -67,9 +67,9 @@ function SignInForm() {
 
       <Button
         className={cn("w-[320px] bg-leaf mt-6 mx-auto", hover.shadow)}
-        // onClick={() => {
-        //   router.push("/");
-        // }}
+        onClick={() => {
+          router.push("/");
+        }}
         type="submit"
       >
         Masuk
