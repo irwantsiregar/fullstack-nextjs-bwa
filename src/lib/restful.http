@@ -16,6 +16,17 @@ POST {{baseurl}}/auth/sign-in HTTP/1.1
 content-type: application/json
 
 {
-    "email": "irwantoregar30@gmail.com",
+    "email": "irwanto.regar30@gmail.com",
+    "password": "secret123"
+}
+
+###
+
+POST {{baseurl}}/auth/sign-up HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Taufik",
+    "email": "taufik@gmail.com",
     "password": "secret123"
 }

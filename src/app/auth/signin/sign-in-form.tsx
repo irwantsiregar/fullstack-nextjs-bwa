@@ -40,8 +40,6 @@ function SignInForm() {
   });
 
   const onSubmit = async(data: UserAuthForm) => {
-    console.log("🚀 ~ onSubmit ~ data:", data);
-
     try {
       const user = await signIn("credentials", {
         email: data.email,
@@ -50,16 +48,17 @@ function SignInForm() {
         redirect: false
       });
 
-      // if (!user?.error) {
-      //   router.push(user?.url || '/')
-      // } else {
-      //   toast({
-      //     title: 'Something went wrong',
-      //     description: 'Please check your email and password',
-      //     variant: 'destructive',
-      //     duration: 2000
-      //   })
-      // }
+      if (!user?.error) {
+        console.log(user);
+        router.push(user?.url || '/')
+      } else {
+        toast({
+          title: 'Something went wrong',
+          description: 'Please check your email and password',
+          variant: 'destructive',
+          duration: 2000
+        })
+      }
     } catch (error) {
       console.log("🚀 ~ onSubmit ~ error:", error)
     }
@@ -72,7 +71,7 @@ function SignInForm() {
       </div>
 
       <Input
-        className="w-[100%] p-4 rounded-sm"
+        className="w-[100%]"
         type="text"
         placeholder="Email"
         {...register("email")}
@@ -81,7 +80,7 @@ function SignInForm() {
 
       <div className="w-[100%] relative mt-4">
         <Input
-          className="w-[100%] p-4 rounded-sm"
+          className="w-[100%]"
           type={showPassword ? "text" : "password"}
           placeholder="Kata Sandi"
           suffix="Eye"
