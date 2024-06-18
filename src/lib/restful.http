@@ -1,0 +1,21 @@
+# REST Client [Extension on Visual Studio Code]
+
+@hostname = localhost
+@port = 3000
+@host = {{hostname}}:{{port}}
+@baseurl = http://{{host}}/api
+# @contentType = application/json
+# @createdAt = {{$datetime iso8601}}
+# @modifiedBy = {{$processEnv USERNAME}}
+
+GET {{baseurl}}/user HTTP/1.1
+
+###
+
+POST {{baseurl}}/auth/sign-in HTTP/1.1
+content-type: application/json
+
+{
+    "email": "irwantoregar30@gmail.com",
+    "password": "secret123"
+}
