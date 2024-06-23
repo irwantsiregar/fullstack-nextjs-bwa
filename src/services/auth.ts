@@ -10,18 +10,19 @@ type UserAuthForm = {
     name: string;
     email: string;
     password: string;
+    // confirm_password: string | undefined;
 }
 
 // Define a service using a base URL and expected endpoints
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/api" }),
   tagTypes: ["auth"],
   endpoints: (builder) => ({
     register: builder.mutation<AuthResponse, UserAuthForm>({
       query: (body) => ({
-        url: '/auth/sign-up',
-        method: 'POST',
+        url: "/auth/sign-up",
+        method: "POST",
         body
       }),
     }),
