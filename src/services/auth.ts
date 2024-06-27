@@ -10,7 +10,7 @@ type UserAuthForm = {
     name: string;
     email: string;
     password: string;
-    // confirm_password: string | undefined;
+    confirm_password: string | undefined;
 }
 
 // Define a service using a base URL and expected endpoints

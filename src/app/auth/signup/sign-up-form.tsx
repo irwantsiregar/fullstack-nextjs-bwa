@@ -52,26 +52,24 @@ function SignUpForm() {
 
   const onSubmit = async (data: UserAuthForm) => {
     try {
-      console.log("🚀 ~ onSubmit ~ payload:", data)
-      const response = await registerMutation(data);
-      console.log("🚀 ~ onSubmit ~ response:", response)
+      const response = await registerMutation(data).unwrap();
 
-      // if (response.success) {
-      // const user = await signIn("credentials", {
-      //   email: data.email,
-      //   password: data.password,
-      //   callbackUrl: searchParams.get("callbackUrl") || "/",
-      //   redirect: false
-      // });
-      //   router.push(user?.url || '/')
-      // } else {
-      //   toast({
-      //     title: 'Something went wrong',
-      //     description: 'Please check your email and password',
-      //     variant: 'destructive',
-      //     duration: 2000
-      //   })
-      // }
+      if (response.success) {
+      const user = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        callbackUrl: searchParams.get("callbackUrl") || "/",
+        redirect: false
+      });
+        router.push(user?.url || '/')
+      } else {
+        toast({
+          title: 'Something went wrong',
+          description: 'Please check your email and password',
+          variant: 'destructive',
+          duration: 2000
+        })
+      }
 
     } catch (error) {
       console.log("🚀 ~ onSubmit ~ error:", error)

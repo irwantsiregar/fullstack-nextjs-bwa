@@ -49,7 +49,6 @@ function SignInForm() {
       });
 
       if (!user?.error) {
-        console.log(user);
         router.push(user?.url || '/')
       } else {
         toast({
