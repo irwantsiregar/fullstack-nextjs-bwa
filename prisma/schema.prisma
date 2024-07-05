@@ -21,3 +21,26 @@ model User {
   @@map("users")
 }
 
+enum ProductCategory {
+  FUNGI
+  FRUIT
+  VEGETABLE
+  ONION
+  BEANS
+  SPICE
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  name        String          @unique
+  img         String
+  description String          @db.LongText
+  price       Int             @default(0) @db.UnsignedInt
+  itemSold    Int             @default(0) @map("item_sold") @db.UnsignedInt
+  rating      Int             @default(5) @db.UnsignedInt
+  category    ProductCategory
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updated     DateTime        @updatedAt @map("updated_at")
+
+  @@map("products")
+}

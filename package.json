@@ -2,12 +2,17 @@
   "name": "vegeta-prototype",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seeds/index.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma": "npx prisma studio"
+    "prisma": "npx prisma studio",
+    "migrate": "npx prisma migrate dev",
+    "db:seed": "npx prisma db seed"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.2.0",
@@ -50,6 +55,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
-    "prisma": "5.1.1"
+    "prisma": "5.1.1",
+    "ts-node": "10.9.1"
   }
 }
