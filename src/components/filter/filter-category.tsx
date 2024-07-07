@@ -1,4 +1,5 @@
 "use client";
+import React, { useState } from "react";
 
 // components
 import { Checkbox } from "@/components/ui/checkbox";
@@ -6,7 +7,18 @@ import { Checkbox } from "@/components/ui/checkbox";
 // assets
 import ProductCategoryJSON from "@/assets/json/product-category.json";
 
-const FilterCategory = () => {
+interface FilterCategoryProps {
+  value?: string[];
+  onChange: (selectedCategories: string[]) => void;
+}
+
+const FilterCategory: React.FC<FilterCategoryProps> = ({
+  value = [],
+  onChange,
+}) => {
+
+  const [selectedCategories, setSelectedCategories] = useState(value);
+
   return (
     <>
       <div className="text-base">Kategori</div>
@@ -19,6 +31,17 @@ const FilterCategory = () => {
             <Checkbox
               className="w-6 h-6 border-2 border-leaf data-[state=checked]:bg-leaf data-[state=checked]:text-primary-foreground"
               id={category.id}
+              onCheckedChange={(isChecked) => {
+                setSelectedCategories((selectedCategory) => {
+                  const newCategories = !isChecked ? selectedCategory.filter(
+                    (item) => item !== category.id) :
+                    [...selectedCategory, category.id];
+                  
+                  onChange(newCategories);
+                  return newCategories
+                })
+              }}
+              checked={selectedCategories.includes(category.id)}
             />
             <label
               htmlFor={category.id}
