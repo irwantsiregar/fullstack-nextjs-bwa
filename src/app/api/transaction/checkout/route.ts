@@ -22,7 +22,6 @@ export async function POST(request: NextRequest) {
         });
     }
 
-
     const checkout = await prisma.checkout.create({
         data: {
             productId: product.id,
@@ -58,7 +57,8 @@ export async function GET(request: NextRequest) {
  
      const checkout = await prisma.checkout.findMany({
         where: {
-            userId: session?.user?.id
+            userId: session?.user?.id,
+            transactionId: null
         },
         include: {
             product: true

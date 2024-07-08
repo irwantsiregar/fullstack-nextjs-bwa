@@ -1,25 +1,29 @@
 "use client";
-import Link from "next/link";
 
 // components
-import { Button } from "@/components/ui/button";
 import DeliveryOptions from "@/components/product-checkout/delivery-options";
+import { Button } from "@/components/ui/button";
 import ItemList from "./ItemList";
 
 // utils
-import { cn, formatNumber } from "@/lib/utils";
+import { useToast } from "@/components/ui/use-toast";
 import { hover } from "@/lib/hover";
-import { useCheckoutsQuery } from "@/services/transaction";
+import { cn, formatNumber } from "@/lib/utils";
+import { useCheckoutsQuery, usePaymentMutation } from "@/services/transaction";
 import { DeliveryMethod } from "@/types/delivery-method";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Checkout() {
   const [deliveryMethod, setDeliveryMethod] =
   useState<DeliveryMethod>("HOME_DELIVERY");
 
+  const {toast} = useToast();
+  const router = useRouter();
   
   const { data } = useCheckoutsQuery();
   const products = data?.data || [];
+  const [mutatePayment] = usePaymentMutation();
   
   const totalPrice = products.reduce(
     (total, product) => total + product.pricePerItem * (product.qty || 1),
@@ -34,6 +38,33 @@ export default function Checkout() {
   const insurance = deliveryMethod === "HOME_DELIVERY" ? 2000 : 0;
 
   const subtotal = totalPrice + deliveryFee + insurance + applicationFee;
+
+  const handlePayment = async () => {
+    try {
+      const data = {
+        application_fee: applicationFee,
+        asurance_fee: insurance,
+        delivery_fee: deliveryFee,
+        delivery_type: deliveryMethod
+      }
+      
+      await mutatePayment(data);
+
+      toast({
+        title: "Payment success!",
+        description: "Your payment has been landed successfully",
+        duration: 2000
+      })
+
+      router.push("/history");
+    } catch (error) {
+      toast({
+        title: "Something went wrong",
+        variant: "destructive",
+        duration: 2000,
+      })
+    }
+  }
 
   return (
     <>
@@ -88,11 +119,9 @@ export default function Checkout() {
               </div>
             </div>
             <div className="flex flex-1">
-              <Link className="w-[100%]" href={"/payment"}>
-                <Button className={cn("w-[100%] mt-6 bg-leaf", hover.shadow)}>
+                <Button className={cn("w-[100%] mt-6 bg-leaf", hover.shadow)} onClick={handlePayment}>
                   Lanjutkan Pembayaran
                 </Button>
-              </Link>
             </div>
           </div>
         </div>
