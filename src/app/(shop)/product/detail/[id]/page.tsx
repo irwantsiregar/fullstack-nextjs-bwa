@@ -9,22 +9,50 @@ import { Button } from "@/components/ui/button";
 import { IconBag, IconCart, IconStar } from "@/components/icons";
 import { ProductShowcase } from "@/components/product/product-showcase";
 import CommonStepper from "@/components/common/common-stepper";
-import { ProductDetails } from "@/components/product/product-card";
+// import { ProductDetails } from "@/components/product/product-card";
 
 // utils
 import { cn, formatNumber } from "@/lib/utils";
 import { hover } from "@/lib/hover";
 
 // assets
-import ProductsJSON from "@/assets/json/products.json";
+// import ProductsJSON from "@/assets/json/products.json";
+import { useGetAllProductsQuery, useGetProductByIdQuery } from "@/services/products";
+import { useToast } from "@/components/ui/use-toast";
+import { useCheckoutMutation } from "@/services/transaction";
+import { useSession } from "next-auth/react";
 
-export default function Products() {
+export default function Products({ params }: { params: { id: string }}) {
   const router = useRouter();
+  const { data: session } = useSession();
+
   const [itemCount, setItemCount] = useState(1);
+  const { toast } = useToast();
 
-  const productDetails = ProductsJSON[0];
+  const { data: productDetails } = useGetProductByIdQuery(params.id);
+  const { data: recommendedProducts, isLoading: recommendedProductsIsLoading } = useGetAllProductsQuery({});
+  
+  const [mutateCheckout] = useCheckoutMutation();
 
-  const [recommendedProducts] = useState<ProductDetails[]>(ProductsJSON);
+  const handleAddToCart = async () => {
+    if (!session?.user) {
+      toast({
+        title: "Please sign in first.",
+        variant: "destructive",
+      });
+
+      router.push('/auth/signin');
+      return;
+    }
+
+    const data = {
+      product_id: params.id,
+      qty: itemCount,
+    }
+
+    await mutateCheckout(data);
+    router.push("/checkout");
+  }
 
   return (
     <main className="flex flex-col w-full min-h-screen items-center pb-8">
@@ -32,34 +60,29 @@ export default function Products() {
         <div className="border p-2 rounded-xl">
           <div className="w-[376px] h-[376px] relative">
             <Image
-              src={productDetails.img}
+              src={productDetails?.data.img || ""}
               layout="fill"
-              alt=""
+              alt={productDetails?.data.name || "Product"}
               objectFit="contain"
             />
           </div>
         </div>
         <div className="flex flex-col gap-4">
           <div className="text-leaf font-semibold">
-            {productDetails.category}
+            {productDetails?.data.category}
           </div>
-          <div className="text-4xl font-semibold">{productDetails.name}</div>
+          <div className="text-4xl font-semibold">{productDetails?.data.name}</div>
           <div className="flex gap-2">
             <IconStar className="w-5 h-5" stroke="carrot" fill="carrot" />
-            <span>{productDetails.rating}</span>
+            <span>{productDetails?.data.rating}</span>
             <span>|</span>
-            <span>{productDetails.sold} terjual</span>
+            <span>{productDetails?.data.itemSold} terjual</span>
           </div>
           <div className="text-4xl font-semibold">
-            Rp {formatNumber(productDetails.price)} / {productDetails.unit}
+            Rp {formatNumber(productDetails?.data.price || 0)} / kg
           </div>
           <div className="text-gray-400">
-            Wortel dapat dimakan dengan berbagai cara. Pada wortel mentah hanya
-            3% β-ririencha yang dilepaskan selama proses pencernaan, proses ini
-            dapat ditingkatkan hingga 39% melalui pulping, memasaknya dan
-            menambahkan minyak sawit. Bisa juga dengan cara di buat jus wortel
-            dan kandungan vitaminnya hampir sama dengan wortel yang dimakan
-            begitu saja.
+            {productDetails?.data.description}
           </div>
           <div className="flex gap-4 items-center">
             <CommonStepper
@@ -71,6 +94,7 @@ export default function Products() {
                 "py-1 px-4 bg-leaf text-white leading-4",
                 hover.shadow
               )}
+              onClick={handleAddToCart}
             >
               <IconCart className="w-5 h-5 mr-2" />
               Masukkan Keranjang
@@ -80,9 +104,7 @@ export default function Products() {
                 "py-1 px-4 bg-carrot text-white leading-4",
                 hover.shadow
               )}
-              onClick={() => {
-                router.push("/checkout");
-              }}
+              onClick={handleAddToCart}
             >
               <IconBag className="w-5 h-5 mr-2" />
               Beli Sekarang
@@ -105,7 +127,8 @@ export default function Products() {
         </div>
         <ProductShowcase
           gridConfig={"grid-cols-4"}
-          products={recommendedProducts}
+          isLoading={recommendedProductsIsLoading}
+          products={recommendedProducts?.data?.data.slice(0, 4) || []}
         />
       </div>
     </main>
