@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
 import Image from "next/legacy/image";
 import Link from "next/link";
+import { useState } from "react";
 
 // components
 import { ProductShowcase } from "@/components/product/product-showcase";
-import { ProductDetails } from "@/components/product/product-card";
+import CommonPagination from "@/components/common/common-pagination";
+import ProductHistory from "@/components/product-history/product-history";
 import {
   Select,
   SelectContent,
@@ -14,8 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ProductHistory from "@/components/product-history/product-history";
-import CommonPagination from "@/components/common/common-pagination";
 
 // utils
 import { hover } from "@/lib/hover";
@@ -23,18 +22,14 @@ import { cn } from "@/lib/utils";
 
 // assets
 import GoldBadge from "@/assets/images/badge-gold.png";
-import ProductsJSON from "@/assets/json/products.json";
+import { useGetAllProductsQuery } from "@/services/products";
+import { useHistoryQuery } from "@/services/transaction";
+import { useSession } from "next-auth/react";
 
 export default function History() {
-  const [transactions] = useState([
-    {
-      products: ProductsJSON,
-    },
-    {
-      products: ProductsJSON,
-    },
-  ]);
-  const [recommendedProducts] = useState<ProductDetails[]>(ProductsJSON);
+  const { data: session } = useSession();
+  const { data: transactions } = useHistoryQuery({});
+  const { data: recommendedProducts, isLoading } = useGetAllProductsQuery({});
   const [activePage, setActivePage] = useState(1);
   const [totalPage] = useState(5);
 
@@ -45,14 +40,14 @@ export default function History() {
           <div className="flex justify-center pt-3 pb-2">
             <div className="w-[71px] h-[71px] rounded-[20px] relative overflow-hidden">
               <Image
-                src="https://ui-avatars.com/api/?name=Taufan+Fadhilah&background=random"
+                src={`https://ui-avatars.com/api/?name=${session?.user?.name || "Anonymous"}&background=random`}
                 layout="fill"
                 alt=""
                 objectFit="cover"
               />
             </div>
           </div>
-          <div className="font-semibold">Taufan Fadhilah</div>
+          <div className="font-semibold">{session?.user?.name || "Anonymous"}</div>
           <div className="flex items-center justify-center">
             <div className="w-[14px] h-[20px] relative mr-2">
               <Image src={GoldBadge} layout="fill" alt="" objectFit="cover" />
@@ -104,10 +99,10 @@ export default function History() {
             </div>
           </div>
 
-          {transactions.map((transaction, index) => (
+          {transactions?.data.data?.map((transaction, index) => (
             <ProductHistory
               key={`productHistory${index}`}
-              products={transaction.products}
+              transaction={transaction}
             />
           ))}
 
@@ -138,7 +133,8 @@ export default function History() {
         </div>
         <ProductShowcase
           gridConfig={"grid-cols-4"}
-          products={recommendedProducts}
+          isLoading={isLoading}
+          products={recommendedProducts?.data?.data.slice(0, 4) || []}
         />
       </div>
     </main>

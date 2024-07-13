@@ -9,14 +9,12 @@ import { Button } from "@/components/ui/button";
 import { IconBag, IconCart, IconStar } from "@/components/icons";
 import { ProductShowcase } from "@/components/product/product-showcase";
 import CommonStepper from "@/components/common/common-stepper";
-// import { ProductDetails } from "@/components/product/product-card";
 
 // utils
 import { cn, formatNumber } from "@/lib/utils";
 import { hover } from "@/lib/hover";
 
 // assets
-// import ProductsJSON from "@/assets/json/products.json";
 import { useGetAllProductsQuery, useGetProductByIdQuery } from "@/services/products";
 import { useToast } from "@/components/ui/use-toast";
 import { useCheckoutMutation } from "@/services/transaction";
